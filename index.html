@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br" xml:lang="pt-br">
+ <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+</meta>
+
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+    <head>
+        <title>Fibonacci</title>
+     <script src="https://d3js.org/d3.v5.min.js"></script>
+    </head>
+
+    <body>
+
+      <p>Visualização da sequência de Fibonacci por quadrados sucessivos.</p>
+      <form>
+      <select onchange = "Desenha()" name="Quadrados" id="NQuadrados">
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10" selected>10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>          
+        </select>
+        </form>
+        <script type = "text/javascript">
+
+        var svg = d3.select("body").append("svg");
+
+        var limX = 700;
+        var limY = 700;
+       
+        //Define dimensions of svg
+        svg.attr("width", limX)
+        .attr("height",limY);
+
+        Desenha();
+
+
+        function Desenha()
+        {
+         //alert (d3.select("#SelectPontos").property("value"));
+       
+       var base; //Multiplicador para o lado do quadrado
+
+        //Clear svg
+       svg.selectAll("*").remove();
+
+        //dados e definicoes macro
+        var corR = [];
+        var corG =[];
+        var corB =[];
+
+        var cR;
+        var cG;
+        var cB;
+
+        
+        //Traça os demais retângulos
+        //var N = 10; //Numero de quadrados
+        var N = d3.select("#NQuadrados").property("value");
+
+        var maxFib = 2*Math.ceil((Math.pow(1.6180339,N) - Math.pow(-0.6180339,N)) / 2.236067977);
+
+        //alert(maxFib);
+
+       base = Math.floor((700 / maxFib)) ;
+
+        var i;
+        var fib =[]; //Seq fibonacci
+        var xref =[]; //Vetor com posiçao x
+        var yref =[]; //Vetor com posiçao y
+        var ladoref =[]; //Vetor com tamanho do lado
+        var x0; //x do quadrado atual
+        var y0; //y do quadrado atual
+        var fibswap;
+
+        //Cria os dois primeiros quadrados
+        //Quadrado 1
+        fib.push(1);
+        lado = base;
+        ladoref.push(lado);
+        x0 = limX/2;
+        y0 = limY/2;
+         
+        xref.push(x0);
+        yref.push(y0);
+         corR.push("rgb(" + String(Math.floor(Math.random() * 150)) + ","+ String(Math.floor(Math.random() * 150)) +","+ String(Math.floor(Math.random() * 150))+")");
+
+        //Quadrado 2
+        fib.push(1);
+        lado = base;
+        ladoref.push(lado);
+        x0 = x0+lado;
+
+        xref.push(x0);
+        yref.push(y0);
+        corR.push ("rgb(" + String(Math.floor(Math.random() * 150)) + ","+ String(Math.floor(Math.random() * 150)) +","+ String(Math.floor(Math.random() * 150))+")");
+
+        //Cria demais quadrados a partir da sequencia
+        for (i = 2; i< N; i++)
+        { 
+         fibswap = fib[i-1]+fib[i-2];
+         fib.push(fibswap);
+
+         lado = fibswap*base;
+         ladoref.push(lado);
+
+         ladoprev = fib[i-1]*base;
+
+
+         //Dependendo da posição relativa (cima, esquerda, baixo, direita), muda coordenadas do x0,y0
+         switch(i % 4)
+         {
+          case 0: //Para baixo
+           x0 = x0;
+           y0 = y0 + ladoprev;
+           break;
+
+          case 1: //Para direita
+           x0 = x0 + ladoprev;
+           y0 = y0 - (lado - ladoprev);
+           break;
+        
+        case 2: //Para cima
+           x0 = x0 -(lado -ladoprev);
+           y0 = y0 -lado;
+
+           break;
+        case 3: //Esquerda
+           x0 = x0 -lado;
+           y0 = y0;
+           break;
+         }
+
+         xref.push(x0);
+         yref.push(y0);
+         corR.push("rgb(" + String(Math.floor(Math.random() * 150)) + ","+ String(Math.floor(Math.random() * 150)) +","+ String(Math.floor(Math.random() * 150))+")");
+        }
+
+         //cG = Math.floor(Math.random() * 200);
+         //cB = Math.floor(Math.random() * 200);
+
+        //Cria os pontos
+        var rect3 = svg.selectAll("rect")
+         .data(xref)
+         .enter()
+         .append("rect");
+
+        rect3.attr("x", function(d,i){
+           return xref[i];
+          })
+          .attr("y", function(d,i){
+           return yref[i];
+          })
+          .attr("width", function(d,i){
+           return ladoref[i];
+          })
+          .attr("height", function(d,i){
+           return ladoref[i];
+          })
+          .attr("fill", function(d,i){return corR[i];})
+          .attr("stroke","black")
+          .attr("stroke-width","1")
+          ;
+          
+         } 
+  </script>
+
+    </body>
+</html>
+
+
+
